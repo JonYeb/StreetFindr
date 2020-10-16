@@ -20,7 +20,8 @@ function createWindow () {
         'height': mainWindowState.height,
         frame: false,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, 'preload.js'),
+            worldSafeExecuteJavaScript: true
         }
     })
 
@@ -33,7 +34,7 @@ function createWindow () {
     mainWindow.loadFile('index.html')
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished
