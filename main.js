@@ -1,16 +1,33 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
+const windowStateKeeper = require('electron-window-state')
+
+let mainWindow
 
 function createWindow () {
-    // Create the browser window.
-    const mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+    // Load the previous state with fallback to defaults
+    let mainWindowState = windowStateKeeper({
+        defaultWidth: 1000,
+        defaultHeight: 800
+    })
+
+    // Create the window using the state information
+    mainWindow = new BrowserWindow({
+        'x': mainWindowState.x,
+        'y': mainWindowState.y,
+        'width': mainWindowState.width,
+        'height': mainWindowState.height,
+        frame: false,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
         }
     })
+
+    // Let us register listeners on the window, so we can update the state
+    // automatically (the listeners will be removed when the window is closed)
+    // and restore the maximized or full screen state
+    mainWindowState.manage(mainWindow)
 
     // and load the index.html of the app.
     mainWindow.loadFile('index.html')
