@@ -1,0 +1,33 @@
+{
+  "name": "streetfindr",
+  "version": "0.0.1",
+  "description": "native app to play Geoguessr like game",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JonYeb/StreetFindr.git"
+  },
+  "keywords": [
+    "electron",
+    "geoguessr",
+    "game"
+  ],
+  "author": "Jonathan Yeboah",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JonYeb/StreetFindr/issues"
+  },
+  "homepage": "https://github.com/JonYeb/StreetFindr#readme",
+  "devDependencies": {
+    "electron": "^10.1.3",
+    "eslint": "^7.11.0"
+  },
+  "dependencies": {
+    "electron-store": "^6.0.1",
+    "electron-window-state": "^5.0.3"
+  }
+}
