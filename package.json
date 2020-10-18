@@ -20,9 +20,6 @@
     "eject": "react-scripts eject",
     "start-electron": "electron ."
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -36,6 +33,8 @@
     ]
   },
   "devDependencies": {
-    "electron": "^10.1.3"
+    "electron": "^10.1.3",
+    "eslint": "^7.11.0",
+    "eslint-plugin-react": "^7.21.4"
   }
 }
