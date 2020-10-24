@@ -19,6 +19,9 @@ module.exports = {
   "plugins": [
     "react"
   ],
+  "globals": {
+    "google": "readonly"
+  },
   "rules": {
     "semi": ["error", "never"],
     "indent": ["error", 2]

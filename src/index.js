@@ -1,12 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
-import App from './App'
+import WorldMap from "./components/WorldMap"
 import * as serviceWorker from './serviceWorker'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <WorldMap />,
   </React.StrictMode>,
   document.getElementById('root')
 )
