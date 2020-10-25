@@ -5,6 +5,7 @@ import getAPIKey from "../api"
 
 const MAP_ID = "world-map"
 const SUBMIT_ID = "submit-suggestion"
+let google
 
 export default class WorldMap extends React.Component {
   constructor(props) {
@@ -14,8 +15,8 @@ export default class WorldMap extends React.Component {
       map: null,
       destination: null,
       destinationLocation: {
-        lat: 21.005853,
-        lng: 105.822644
+        lat: 0,
+        lng: 0
       },
       guessedPosition: null,
       overlay: null,
@@ -49,7 +50,8 @@ export default class WorldMap extends React.Component {
     script.defer = true
 
     window.initMap = () => {
-      /*global google*/
+      google = window.google
+
       let map = new google.maps.Map(document.getElementById(MAP_ID), MAP_OPTIONS)
       let marker = new google.maps.Marker({
         position: this.state.destinationLocation,
@@ -71,6 +73,10 @@ export default class WorldMap extends React.Component {
           this.distance = distance
         }
 
+        formatDistance() {
+          return  `${Math.round(this.distance / 1000)} km`
+        }
+
         /**
          * onAdd is called when the map's panes are ready and the overlay has been
          * added to the map.
@@ -82,7 +88,7 @@ export default class WorldMap extends React.Component {
           // this.div.style.position = "absolute"
           // Create the img element and attach it to the div.
           let text = document.createElement("span")
-          text.innerText = this.distance
+          text.innerText = this.formatDistance()
 
           this.div.appendChild(text)
           // Add the element to the "overlayLayer" pane.
