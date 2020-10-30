@@ -1,23 +1,29 @@
 import React from "react"
+import PropTypes from "prop-types"
 
-//import getRandomInRange from "./helperFunctions"
+import {getRandomInRange} from "./helperFunctions"
+import {countries} from "../Assets/countriesByBounds"
 import "./StreetView.css"
 
 const STREET_VIEW = 'street-view'
 
-let google, streetView
+let google, streetView, streetViewService
 
 export default class StreetView extends React.Component {
   constructor(props) {
     super(props)
   }
 
-  componentDidMount() {
-    const berkeley = { lat: 37.869085, lng: -122.254775 }
+  static get propTypes() {
+    return {
+      setLocation: PropTypes.func
+    }
+  }
 
+  componentDidMount() {
     google = window.google
 
-    let streetViewService = new google.maps.StreetViewService()
+    streetViewService = new google.maps.StreetViewService()
     streetView = new google.maps.StreetViewPanorama(
       document.getElementById(STREET_VIEW),
       {
@@ -26,26 +32,40 @@ export default class StreetView extends React.Component {
         showRoadLabels: false
       }
     )
-    streetViewService.getPanorama({
-      location: berkeley,
-      radius: 50,
-      preference: "nearest",
-      source: "outdoor"
-    }, this.processServiceResponse)
-
-
+    this.setStreetViewLocation()
   }
 
-  processServiceResponse(data, status) {
-    if (status === "OK") {
-      const location = data.location
+  setStreetViewLocation() {
+    let location = this.getRandomStartingLocation()
+    streetViewService.getPanorama({
+      location: location,
+      radius: 10000,
+      preference: "nearest",
+      source: "outdoor"
+    }, (data, status) => {
+      if (status === "OK") {
+        const locationData = data.location
+        streetView.setPano(locationData.pano)
+        streetView.setVisible(true)
+        this.props.setLocation(location)
+      } else {
+        this.setStreetViewLocation()
+      }
+    })
+  }
 
-      streetView.setPano(location.pano)
+  getRandomStartingLocation() {
+    //return {lat: 46.3, lng: 47.11}
+    let length = countries.length
+    let [
+      country, continent,
+      maxlatitude, minlatitude,
+      maxlongitude, minlongitude
+    ] = countries[getRandomInRange(1, length - 1, 0)]
 
-      streetView.setVisible(true)
-
-    } else {
-      console.error("Street View data not found for this location.")
+    return {
+      lat: getRandomInRange(parseFloat(minlatitude), parseFloat(maxlatitude), 3),
+      lng: getRandomInRange(parseFloat(minlongitude), parseFloat(maxlongitude), 3)
     }
   }
 

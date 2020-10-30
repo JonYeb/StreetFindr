@@ -1,4 +1,5 @@
 import React from "react"
+import PropTypes from "prop-types"
 
 import "./WorldMap.css"
 
@@ -12,15 +13,33 @@ export default class WorldMap extends React.Component {
 
     this.state = {
       map: null,
-      destination: null,
-      destinationLocation: {
-        lat: 0,
-        lng: 0
-      },
       guessedPosition: null,
+      marker: false,
       overlay: null,
     }
+  }
 
+  static get propTypes() {
+    return {
+      destination: PropTypes.object
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.destination.lat !== this.props.destination.lat || prevProps.destination.lng !== this.props.destination.lng) {
+      this.setStartMarker()
+    }
+  }
+
+  setStartMarker() {
+    let map = this.state.map
+    let marker = new google.maps.Marker({
+      position: this.props.destination,
+      map: map,
+    })
+    this.setState({
+      marker: marker
+    })
   }
 
   componentDidMount() {
@@ -37,17 +56,13 @@ export default class WorldMap extends React.Component {
     google = window.google
 
     let map = new google.maps.Map(document.getElementById(MAP_ID), MAP_OPTIONS)
-    let marker = new google.maps.Marker({
-      position: this.state.destinationLocation,
-      map: map,
-    })
+
     map.addListener('click', e => {
       this.placeMarkerAtTo(e.latLng, map)
     })
 
     this.setState({
       map: map,
-      destination: marker
     })
 
     class USGSOverlay extends google.maps.OverlayView {
@@ -159,13 +174,13 @@ export default class WorldMap extends React.Component {
       map: this.state.map,
     })
 
-    let path = [this.state.guessedPosition.getPosition(), this.state.destination.getPosition()]
+    let path = [this.state.guessedPosition.getPosition(), this.props.destination]
     poly.setPath(path)
   }
 
   computeDistanceFrom() {
     let positionFrom = this.state.guessedPosition.getPosition()
-    let positionTo = this.state.destination.getPosition()
+    let positionTo = new google.maps.LatLng(this.props.destination)
     let distance = google.maps.geometry.spherical
       .computeDistanceBetween(positionFrom, positionTo)
     this.drawDistance()

@@ -7,7 +7,8 @@ export default class Game extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      loaded: false
+      loadStreetView: false,
+      startingLocations: {lat:0,lng:0}
     }
   }
 
@@ -28,7 +29,7 @@ export default class Game extends React.Component {
 
     window.loadedMaps = () => {
       this.setState({
-        loaded: true
+        loadStreetView: true
       })
     }
 
@@ -36,13 +37,23 @@ export default class Game extends React.Component {
 
   }
 
+  setStartingLocation(location) {
+    let startingLocations = this.state.startingLocations
+    startingLocations = location
+    this.setState({
+      startingLocations: startingLocations
+    })
+  }
+
   render() {
-    let loaded = this.state.loaded
-    if (loaded) {
+    let loadStreetView = this.state.loadStreetView
+    if (loadStreetView) {
       return (
         <div>
-          <div><WorldMap/></div>
-          <div><StreetView/></div>
+          <div>
+            <WorldMap destination={this.state.startingLocations} />
+          </div>
+          <div><StreetView setLocation={(location) => this.setStartingLocation(location)} /></div>
         </div>
       )
     } else {
