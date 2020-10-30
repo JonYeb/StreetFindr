@@ -1,14 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
-//import WorldMap from "./components/WorldMap"
 import * as serviceWorker from './serviceWorker'
-import StreetView from "./components/StreetView"
+import Game from "./components/Game"
 
 ReactDOM.render(
   <React.StrictMode>
-    {/*<WorldMap />,*/}
-    <StreetView />
+    <Game />
   </React.StrictMode>,
   document.getElementById('root')
 )

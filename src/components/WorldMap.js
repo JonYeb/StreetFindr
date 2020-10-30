@@ -1,7 +1,6 @@
 import React from "react"
 
 import "./WorldMap.css"
-import getAPIKey from "../api"
 
 const MAP_ID = "world-map"
 const SUBMIT_ID = "submit-suggestion"
@@ -26,116 +25,98 @@ export default class WorldMap extends React.Component {
 
   componentDidMount() {
     const MAP_OPTIONS = {
-      center: { lat: 0, lng: 0 },
+      center: {lat: 0, lng: 0},
       zoom: 3,
       streetViewControl: false,
       mapTypeControl: false,
-      fullscreenControl : false,
+      fullscreenControl: false,
       rotateControl: false,
       gestureHandling: "greedy",
     }
 
-    const API_KEY = getAPIKey()
-    const MAP_LIBRARIES = [
-      "geometry"
-    ]
+    google = window.google
 
-    let mapsURL = new URL("https://maps.googleapis.com/maps/api/js")
-    mapsURL.searchParams.append('key', API_KEY)
-    mapsURL.searchParams.append('callback', "initMap")
-    mapsURL.searchParams.append('libraries', MAP_LIBRARIES.join(`,`))
+    let map = new google.maps.Map(document.getElementById(MAP_ID), MAP_OPTIONS)
+    let marker = new google.maps.Marker({
+      position: this.state.destinationLocation,
+      map: map,
+    })
+    map.addListener('click', e => {
+      this.placeMarkerAtTo(e.latLng, map)
+    })
 
-    let script = document.createElement('script')
-    script.src = mapsURL.href
-    script.defer = true
+    this.setState({
+      map: map,
+      destination: marker
+    })
 
-    window.initMap = () => {
-      google = window.google
+    class USGSOverlay extends google.maps.OverlayView {
+      constructor(position, distance) {
+        super()
+        this.position = position
+        this.distance = distance
+      }
 
-      let map = new google.maps.Map(document.getElementById(MAP_ID), MAP_OPTIONS)
-      let marker = new google.maps.Marker({
-        position: this.state.destinationLocation,
-        map: map,
-      })
-      map.addListener('click' , e => {
-        this.placeMarkerAtTo(e.latLng, map)
-      })
+      formatDistance() {
+        return `${Math.round(this.distance / 1000)} km`
+      }
 
-      this.setState({
-        map: map,
-        destination: marker
-      })
+      /**
+       * onAdd is called when the map's panes are ready and the overlay has been
+       * added to the map.
+       */
+      onAdd() {
+        this.div = document.createElement("div")
+        this.div.style.borderStyle = "solid black"
+        this.div.style.borderWidth = "0px"
+        // this.div.style.position = "absolute"
+        // Create the img element and attach it to the div.
+        let text = document.createElement("span")
+        text.innerText = this.formatDistance()
 
-      class USGSOverlay extends google.maps.OverlayView {
-        constructor(position, distance) {
-          super()
-          this.position = position
-          this.distance = distance
-        }
+        this.div.appendChild(text)
+        // Add the element to the "overlayLayer" pane.
+        const panes = this.getPanes()
+        panes.overlayLayer.appendChild(this.div)
+      }
 
-        formatDistance() {
-          return  `${Math.round(this.distance / 1000)} km`
-        }
-
-        /**
-         * onAdd is called when the map's panes are ready and the overlay has been
-         * added to the map.
-         */
-        onAdd() {
-          this.div = document.createElement("div")
-          this.div.style.borderStyle = "solid black"
-          this.div.style.borderWidth = "0px"
-          // this.div.style.position = "absolute"
-          // Create the img element and attach it to the div.
-          let text = document.createElement("span")
-          text.innerText = this.formatDistance()
-
-          this.div.appendChild(text)
-          // Add the element to the "overlayLayer" pane.
-          const panes = this.getPanes()
-          panes.overlayLayer.appendChild(this.div)
-        }
-
-        /**
-         * The onRemove() method will be called automatically from the API if
-         * we ever set the overlay's map property to 'null'.
-         */
-        onRemove() {
-          if (this.div) {
-            this.div.parentNode.removeChild(this.div)
-            delete this.div
-          }
-        }
-
-        hide() {
-          if (this.div) {
-            this.div.style.visibility = "hidden"
-          }
-        }
-
-        show() {
-          if (this.div) {
-            this.div.style.visibility = "visible"
-          }
-        }
-
-        setPosition(position) {
-          this.position = position
-        }
-
-        setDistance(distance) {
-          this.distance = distance
+      /**
+       * The onRemove() method will be called automatically from the API if
+       * we ever set the overlay's map property to 'null'.
+       */
+      onRemove() {
+        if (this.div) {
+          this.div.parentNode.removeChild(this.div)
+          delete this.div
         }
       }
 
-      let overlay = new USGSOverlay(null, null)
+      hide() {
+        if (this.div) {
+          this.div.style.visibility = "hidden"
+        }
+      }
 
-      this.setState({
-        overlay: overlay
-      })
+      show() {
+        if (this.div) {
+          this.div.style.visibility = "visible"
+        }
+      }
 
+      setPosition(position) {
+        this.position = position
+      }
+
+      setDistance(distance) {
+        this.distance = distance
+      }
     }
-    document.head.appendChild(script)
+
+    let overlay = new USGSOverlay(null, null)
+
+    this.setState({
+      overlay: overlay
+    })
   }
 
 
