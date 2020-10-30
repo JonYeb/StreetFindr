@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
 }
 
 .App-logo {
