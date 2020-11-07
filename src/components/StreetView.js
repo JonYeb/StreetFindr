@@ -8,6 +8,7 @@ import "./StreetView.css"
 const STREET_VIEW = 'street-view'
 const SEED_APPEND = 'street-findr_seed-append'
 const MAX_DEPTH = 20
+const MIN_TIME = 30
 
 
 let google, streetView, streetViewService
@@ -17,7 +18,7 @@ export default class StreetView extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      seed: ''
+      seed: '',
     }
   }
 
@@ -39,6 +40,11 @@ export default class StreetView extends React.Component {
         showRoadLabels: false
       }
     )
+  }
+
+  finishGame() {
+    alert('finish')
+    document.getElementById('submit-suggestion').click()
   }
 
   setStreetViewLocation() {
@@ -65,6 +71,16 @@ export default class StreetView extends React.Component {
         streetView.setPano(locationData.pano)
         streetView.setVisible(true)
         this.props.setLocation(location)
+        const TIMED_GAME = document.getElementById('game-timed')
+        if (TIMED_GAME.checked) {
+          const TIME_FIELD = document.getElementById('game-timer')
+          let time = parseInt(TIME_FIELD.value)
+          let countdown = (time < MIN_TIME ? MIN_TIME : time)
+          countdown *= 1000
+          window.setTimeout( () => {
+            this.finishGame()
+          }, countdown)
+        }
       } else {
         let oldSeed = this.state.seed
         let seedArray = oldSeed.split("")
@@ -86,7 +102,7 @@ export default class StreetView extends React.Component {
       })
     }
     console.log(seed)
-    //return {lat: 46.3, lng: 47.11}
+    return {lat: 46.3, lng: 47.11}
     let length = countries.length
     let [
       country, continent,
@@ -107,6 +123,15 @@ export default class StreetView extends React.Component {
         <div>
           <label htmlFor="game-seedrandom">Seed for start</label>
           <input type="text" id="game-seedrandom" />
+        </div>
+        <div>
+          <label htmlFor="game-timed">Activate timer?</label>
+          <input type="checkbox" id="game-timed" />
+          <label htmlFor="game-timer">Timelimit</label>
+          <input id="game-timer" type="number" step="1" min={MIN_TIME} />
+          <div>
+
+          </div>
         </div>
         <div>
           <button onClick={() => this.setStreetViewLocation()} id="game-start">start game</button>
