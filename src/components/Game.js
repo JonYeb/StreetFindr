@@ -53,7 +53,11 @@ export default class Game extends React.Component {
           <div>
             <WorldMap destination={this.state.startingLocations} />
           </div>
-          <div><StreetView setLocation={(location) => this.setStartingLocation(location)} /></div>
+          <div>
+            <StreetView
+              setLocation={(location) => this.setStartingLocation(location)}
+            />
+          </div>
         </div>
       )
     } else {
